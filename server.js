@@ -9,11 +9,11 @@ var app = express();
 var formidable = require('formidable'),
 http = require('http'),
 util = require('util');
-    
+
 //convertor: ttf->woff
 var gulp = require('gulp');
 var ttf2woff = require('gulp-ttf2woff');
-    
+
 //run gulp
 var jobType='ttf2woff';
 var exec = require('child_process').exec;
@@ -56,12 +56,12 @@ http.createServer(function(req, res) {
         console.log('throw error now!'+message);
         res.writeHead(200,{'content-type':'text/html'});
         res.end('Upload too large');
-        
+
       });
 
       form.on('progress', function(bytesReceived, bytesExpected) {
         if (bytesReceived > MAX_UPLOAD_SIZE) {
-            this.emit('error'); 
+            this.emit('error');
           res.writeHead(200,{'content-type':'text/html'});
           res.end('Upload too large');
 	}
@@ -84,7 +84,7 @@ http.createServer(function(req, res) {
             if (err) {
               throw err;
             }
-	
+
             //shrink ttf based on input. write the string to char.txt, read it from python run.py
             fs.rename(input.path, 'TTFRender/char.txt', function (err) {
               if(err){
@@ -127,14 +127,23 @@ http.createServer(function(req, res) {
 
     // show a file upload form
     res.writeHead(200, {
-        'content-type': 'text/html'
+        'content-type': 'text/html;charset=utf-8'
     });
     res.end(
+        '<div style="width:900px;margin:20px auto;font-size:16px;padding:10px;line-height:20px;">'+
         '<form action="/upload" enctype="multipart/form-data" method="post">'+
-        '<span>content file (pure text file that includes all characters you want to make font for) 包含需美化字符的纯文本文件：</span><input type="file" name="input" multiple="multiple"><br>'+
-        '<span>TTF file TTF格式字体文件：</span><input type="file" name="upload" multiple="multiple"><br>'+
-        '<input type="submit" value="Upload">'+
-        '</form>'
+        '<p><span style="color:#008DFF;font-weight:700">文本文件：</span>'+
+        '<input type="file" name="input" multiple="multiple"><br>'+
+        '<span style="color:#999;font-size:12px;">（A TEXT file, which is pure text file that includes all characters you want to make WOFF font / 包含需美化字符的纯文本文件）</span>'+
+        '</p>'+
+        '<p><span style="color:#008DFF;font-weight:700">字体文件：</span><input type="file" name="upload" multiple="multiple"><br>'+
+        '<span  style="color:#999;font-size:12px;">（TTF file / TTF格式）</span>'+
+        '</p>'+
+        '<p><input type="submit" value="Generate WOFF Font / 生成WOFF字体" style="padding:10px 20px;font-size:18px;cursor:pointer;color:#ffffff;background:#0FAE34;border:2px solid #CBD5D7;"><br/>'+
+        '<span  style="color:#999;font-size:12px;">（Click to upload and generate WOFF font file / 点击上传并生成WOFF字体文件）</span>'+
+        '</p>'+
+        '</form>'+
+        '</div>'
         );
 }).listen(3000);
 
